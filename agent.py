@@ -1,3 +1,24 @@
+import sys
+
+# State diagram for the assignment
+DETECT1001 = {
+    "A":{
+        0:('A',0),
+        1:('B',0)
+    },
+    "B":{
+        0:('C',0),
+        1:('B',0)
+    },
+    "C":{
+        0:('D',0),
+        1:('B',0)
+    },
+    "D":{
+        0:('A',0),
+        1:('B',1)
+    }
+}
 
 class Environment:
     """
@@ -22,6 +43,15 @@ class Environment:
 
         self.world = bits
         self.index = 0
+
+    def new_string(self,bits:str):
+        """Resets the Environment with a whole new string to work with"""
+        try:
+            int(bits,2)
+        except:
+            raise Exception("Environment has to be a string of 1s and 0s")
+        self.world = bits
+        self.reset()
 
     def read_bit(self) -> int:
         """Returns the next bit in the string; -1 if we've reached the end
@@ -89,11 +119,19 @@ class Agent:
     def get_output(self) -> str:
         """Returns the agent's internal model of the environment"""
         return self.model
+    
+    def get_states(self):
+        """Returns the agent's states"""
+        return self.state_set
 
 
 
 if __name__=='__main__':
-    warudo = Environment("010001001001")
+    try:
+        input_string = sys.argv[1]
+    except:
+        input_string = input("Enter a string of 1s and 0s: ")
+    world = Environment(input_string)
     table = {
         "A":{
             0:('A',0),
@@ -114,12 +152,12 @@ if __name__=='__main__':
     }
     agent = Agent(table,"A")
 
-    for n in warudo.read_bit():
+    for n in world.read_bit():
         print(n)
         agent.sense(n)
         print(agent.get_output())
 
-    print(next(warudo.read_bit()))
+    print(next(world.read_bit()))
     print(agent.get_output())
 
     
